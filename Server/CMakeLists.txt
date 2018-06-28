@@ -25,3 +25,7 @@ add_executable (Server ${SOURCES})
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.
 #MIVSEUMREM
+8
+8
+8
+8
