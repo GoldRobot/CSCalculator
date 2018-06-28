@@ -24,3 +24,4 @@ add_executable (Server ${SOURCES})
 #add_executable (Serverv003 "main.cpp" "server_main.cpp" "server_main.h")
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.
+#MIVSEUMREM
