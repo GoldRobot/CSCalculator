@@ -50,7 +50,7 @@ int main()
 		file << "Connection failed (" << e.code().value() << " -- " << e.code().message() << ")." << endl;
 		//system("pause");
 		file.close();
-		system("pause");
+		//system("pause");
 		return -1;
 	}
 	int session_id = 0;
@@ -64,21 +64,21 @@ int main()
 		{
 			cout << "\nConnection aborted." << endl;
 			e.~system_error();
-			system("pause");
+			//system("pause");
 			return 0;
 		}
 		else
 		{
 			cout << "\nUnnoknw exeption." << endl;
 			e.~system_error();
-			system("pause");
+			//system("pause");
 			return -1;
 		}
 	}
 	boost::thread(boost::bind(client_process, &target_socket, session_id));
 	cout << "Session ID: " << session_id << endl;
 	cout << "Connected." << endl;
-	system("pause");
+	//system("pause");
 	target_socket.close();
 	cout << "Disconnected." << endl;
 	file.close();

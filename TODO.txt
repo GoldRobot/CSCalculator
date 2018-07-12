@@ -1,0 +1,21 @@
+3. Создать поток для работы с БД
+4. Создать протокол авторизации
+4.1 Сервер
+4.2 Клиент
+5. Осилить какойнить опенсоурс SQL
+6. Осилить присоединение БД к серверу
+7. Найти или реализовать парсер для собственно калькулятора
+
+Сделать два счетчика, для фактического баланса и баланса с учетом поставленных задач
+//add check at server side if socket closed, use read to check it
+
+
+
+
+
+
+
+
+-DCMAKE_INSTALL_PREFIX:PATH="C:\Users\GoldRobot\CMakeBuilds\3a665544-1a4e-b03c-a8e2-c3b0572f14db\install\x64-Debug"
+
+-DCMAKE_BUILD_TYPE="Debug"
