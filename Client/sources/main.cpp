@@ -22,7 +22,7 @@ void client_process(ip::tcp::socket *target_socket, int session_id)
 	{
 		try
 		{
-			target_socket->send(buffer(data));
+			//target_socket->send(buffer(data));
 		}
 		catch (boost::system::system_error e)
 		{

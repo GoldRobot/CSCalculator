@@ -18,6 +18,7 @@ int Client_Sesion_Process(ip::tcp::socket *sesion_socket)
 		while (true)
 		{
 
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
 		}
 	}
 	sesion_socket->close();

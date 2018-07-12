@@ -37,7 +37,7 @@ int main()
 		cout << threads_connections_acceptor[i].Get_ID();
 		cout << " Test " << threads_connections_acceptor[i].Get_Test() << endl;
 	}
-	cout << endl;
+	cout <<"--------------------"<< endl;
 	for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
 	{
 		threads_connections_acceptor[i].Wait_Stop();
