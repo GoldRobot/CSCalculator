@@ -31,7 +31,7 @@ void client_process(ip::tcp::socket *target_socket, int session_id)
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
 	}
 }
-
+//asdfasdf
 int main()
 {
 	std::ofstream file;
