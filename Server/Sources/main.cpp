@@ -11,7 +11,7 @@
 #include "server_main.h"
 #include "console_output.h"
 
-#define NUMBER_OF_PORT_THREADS 6
+#define NUMBER_OF_PORT_THREADS 1
 #define START_PORT 42042
 
 #define MAIN_THREADS

@@ -15,20 +15,34 @@ using namespace boost::asio;
 
 void client_process(ip::tcp::socket *target_socket, int session_id)
 {
+	cout << "Connection done" << endl;
 	string data;
 	//data = "Session ID: " + std::to_string(session_id);
 	data = std::to_string(session_id);
-	while (true)
+	data = "abvgd\r\n";
+	bool cycle_work = true;
+	bool sent_once = false;
+	bool check_sent_once = false;
+	int i_data = 0;
+	const string delimiter = "\r\n";
+	while (cycle_work)
 	{
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
 		try
 		{
-			//target_socket->send(buffer(data));
+			if (!sent_once && check_sent_once || !check_sent_once)
+			{
+				data = "login username password";
+				cout << "Sending: " << data << endl;
+				target_socket->send(buffer(data + delimiter));
+			}
 		}
 		catch (boost::system::system_error e)
 		{
 			return; //unnoknw error
 		}
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+		//boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+		//cycle_work = false;
 	}
 }
 //asdfasdf
@@ -54,6 +68,7 @@ int main()
 		return -1;
 	}
 	int session_id = 0;
+	/*
 	try
 	{
 		target_socket.read_some(buffer(&session_id, sizeof(session_id)));
@@ -75,7 +90,9 @@ int main()
 			return -1;
 		}
 	}
-	boost::thread(boost::bind(client_process, &target_socket, session_id));
+	*/
+	boost::thread talk_thread = boost::thread(boost::bind(client_process, &target_socket, session_id));
+	talk_thread.join();
 	cout << "Session ID: " << session_id << endl;
 	cout << "Connected." << endl;
 	//system("pause");

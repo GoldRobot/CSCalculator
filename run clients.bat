@@ -1,0 +1,1 @@
+FOR /L %%i IN (1,1,3) DO start Client/build/Client-debug.exe

@@ -6,7 +6,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build )
 
-file (GLOB  SOURCES ./Sources/*.h ./Sources/*.cpp)
+file (GLOB  SOURCES ./Sources/*.h ./Sources/*.cpp ./Sources/*.hpp)
 set(Boost_INCLUDE_DIR "E:/Documents Work&Study/libraries/boost_1_67_0")
 set(Boost_LIBRARY_DIR "E:/Documents Work&Study/libraries/boost_1_67_0/lib-msvc-14.1")
 #find_package (Boost COMPONENTS system filesystem REQUIRED)

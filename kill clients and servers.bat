@@ -1,0 +1,6 @@
+Taskkill /f /t /im "Client v*"
+Taskkill /f /t /im "Server v*"
+Taskkill /f /t /im "Client.exe"
+Taskkill /f /t /im "Server.exe"
+Taskkill /f /t /im "Client-debug.exe"
+Taskkill /f /t /im "Server-debug.exe"
