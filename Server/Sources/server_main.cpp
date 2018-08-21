@@ -12,7 +12,7 @@ string Read_Consume_Streambuf_To_String(streambuf & buffer, size_t message_size,
 	return result;
 }
 
-int Client_Sesion_Process(ip::tcp::socket *sesion_socket, Queue_thread_safe &queue_data)
+int Client_Sesion_Process(ip::tcp::socket *sesion_socket, Thread_safe_queue_output &queue_data)
 {
 	string output_data;
 	output_data = "Sesion estabelished.\n";
@@ -98,7 +98,7 @@ int Thread_connection_receiving::Process_Connections()
 }
 
 
-Thread_connection_receiving::Thread_connection_receiving(io_service * service_io_stream_New, unsigned short port_New, Queue_thread_safe *queue_data_new)
+Thread_connection_receiving::Thread_connection_receiving(io_service * service_io_stream_New, unsigned short port_New, Thread_safe_queue_output *queue_data_new)
 {
 	queue_data = queue_data_new;
 	service_io_stream = service_io_stream_New;

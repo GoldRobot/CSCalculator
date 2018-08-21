@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "console_output.h"
+#include "thread_safe_queue.h"
 #include <istream>
 
 using namespace boost::asio;
@@ -22,7 +22,7 @@ typedef boost::shared_ptr <ip::tcp::socket> Socket_PTR;
 
 class Thread_connection_receiving
 {
-	Queue_thread_safe *queue_data;
+	Thread_safe_queue_output *queue_data;
 	bool is_initialized = false;
 	bool is_started = false;
 	unsigned short port = 0;
@@ -38,7 +38,7 @@ class Thread_connection_receiving
 	int Process_Connections();
 	int Process_Connections_Handler();
 public:
-	Thread_connection_receiving(io_service *service_io_stream_New, unsigned short port_New, Queue_thread_safe *queue_data_new);
+	Thread_connection_receiving(io_service *service_io_stream_New, unsigned short port_New, Thread_safe_queue_output *queue_data_new);
 	void Set_Thread_Id();
 	string Get_Thread_ID();
 	int Create_Start();
