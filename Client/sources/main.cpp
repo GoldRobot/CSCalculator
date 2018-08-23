@@ -25,17 +25,49 @@ void client_process(ip::tcp::socket *target_socket, int session_id)
 	bool check_sent_once = false;
 	int i_data = 0;
 	const string delimiter = "\r\n";
+	int state = 0;
 	while (cycle_work)
 	{
-		boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(1000));
 		try
 		{
-			if (!sent_once && check_sent_once || !check_sent_once)
+			switch (state)
 			{
-				data = "login username password";
-				cout << "Sending: " << data << endl;
-				target_socket->send(buffer(data + delimiter));
+			case 0:
+				data = "login ! username ab";
+				state++;
+				break;
+			case 1:
+				data = "password ! pass ab";
+				state++;
+				break;
+			case 2:
+				data = "calc 45345 + 0 + 0xdf234 - 1000 % 7";
+				state++;
+				break;
+			case 3:
+				data = "EMPTY";
+				state++;
+				break;
+			case 4:
+				data = "logout ";
+				state++;
+				break;
+			case 5:
+				data = "EMPTY";
+				state++;
+				break;
+			case 6:
+				data = "EMPTY";
+				state++;
+				break;
+			default:
+				data = "RANDOM STRING AGAS";
+				state = 0;
+				break;
 			}
+			target_socket->send(buffer(data + delimiter));
+			cout << "Sent: " << data << endl;
 		}
 		catch (boost::system::system_error e)
 		{

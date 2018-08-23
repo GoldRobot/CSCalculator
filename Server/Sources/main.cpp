@@ -1,76 +1,76 @@
-#include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-#include "server_main.h"
-#include "thread_safe_queue.h"
+#include "server_instance.h"
+#include "thread_safe_data_structures.h"
 
 #define NUMBER_OF_PORT_THREADS 1
 #define START_PORT 42042
+#define PRINT_MAIN_SERVICE_INFO true
+#define MAIN_LOOP_ENABLE true
 
-#define MAIN_THREADS
 
-using namespace boost::asio;
+//#define CLOSE_AFTER_START
+
 using std::cout;
 using std::cin;
 using std::endl;
 using std::string;
-
-void Add_Main_Info(Thread_safe_queue_output & queue_data, string thread_id_main, int number_of_threads, string *thread_id_acceptors)
-{
-	string data_line;
-	std::queue <string> data_full;
-	data_line = "-----------------\n";
-	data_full.push(data_line);
-	data_line = "ID of threads:\n";
-	data_full.push(data_line);
-	data_line = "Main thread: " + thread_id_main + "\n";
-	data_full.push(data_line);
-	for (int i = 0; i < number_of_threads; i++)
-	{
-		data_line = std::to_string(i + 1) + " thread: " + thread_id_acceptors[i] + "\n";
-		data_full.push(data_line);
-	}
-	data_line = "-----------------\n";
-	data_full.push(data_line);
-	queue_data.Push_Queue(data_full);
-}
-
+using std::to_string;
 
 int main()
 {
-	string thread_id_main = boost::lexical_cast<std::string>(boost::this_thread::get_id());
-	io_service io_service_object;
-	Thread_safe_queue_output queue_data;
-	boost::thread talk_thread = boost::thread(boost::bind(Thread_Safe_Queue_Output_Process, boost::ref(queue_data)));
-#ifdef MAIN_THREADS
-	std::vector <Thread_connection_receiving> threads_connections_acceptor;
-	string *threads_id_acceptors;
-	threads_id_acceptors = new string[NUMBER_OF_PORT_THREADS];
+	Thread_safe_print_queue print_queue;
+	boost::thread print_thread = boost::thread(boost::bind(Thread_Safe_Print_Queue_Process, boost::ref(print_queue)));
+	Thread_safe_server_info server_info;
+	server_info.Thread_Main_Os_ID_Set(boost::lexical_cast<std::string>(boost::this_thread::get_id()));
+	std::vector <Server_instance> threads_connections_acceptor;
 	for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
 	{
-		threads_connections_acceptor.push_back(Thread_connection_receiving(&io_service_object, START_PORT + i, &queue_data));
+		threads_connections_acceptor.emplace_back(START_PORT + i, &print_queue, &server_info, i);
 	}
-	boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
 	for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
 	{
-		threads_connections_acceptor[i].Create_Start();
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
-		threads_id_acceptors[i] = threads_connections_acceptor[i].Get_Thread_ID();
+		threads_connections_acceptor[i].Thread_Create_Start();
 	}
-	Add_Main_Info(queue_data, thread_id_main, NUMBER_OF_PORT_THREADS, threads_id_acceptors);
+#ifdef CLOSE_AFTER_START
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(3000));
 	for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
 	{
-		threads_connections_acceptor[i].Wait_Stop();
+		threads_connections_acceptor[i].Interrupt();
 	}
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+	print_thread.interrupt();
 #endif
-	talk_thread.join();
+	string temp_string;
+	while (MAIN_LOOP_ENABLE)
+	{
+		if (PRINT_MAIN_SERVICE_INFO)
+		{
+			temp_string = "Connections: " + to_string(server_info.Connections_Total_Amount_Get()) + "\n";
+			for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
+			{
+				temp_string += "Port " + to_string(threads_connections_acceptor[i].Port_Get()) + ":" + to_string(threads_connections_acceptor[i].Connections_Amount_Get());
+				if (i!= (NUMBER_OF_PORT_THREADS-1))
+				{
+					temp_string += " -|- ";
+				}
+			}
+			temp_string += "\n\n";
+			print_queue.Push(temp_string);
+		}
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(2000));
+	}
+	for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
+	{
+		threads_connections_acceptor[i].Wait_Join();
+	}
+	print_thread.join();
 	return 0;
 }
 
