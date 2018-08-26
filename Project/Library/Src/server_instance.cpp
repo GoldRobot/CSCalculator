@@ -19,22 +19,23 @@ using boost::asio::ip::tcp;
 using boost::asio::io_service;
 constexpr const auto ENABLE_CONNECTION_RECEIVING = true;
 constexpr const auto CLOSE_AFTER_CLIENT_CONNECT = false;
+constexpr const auto PRINT_SERVICE_INFO = false;
 
-constexpr const auto THREAD_POOL_ACCEPTORS_AMOUNT = 10;
-constexpr const auto THREAD_POOL_CONNECTION_TALKERS_AMOUNT = 3;
+constexpr const auto THREAD_POOL_ACCEPTORS_AMOUNT = 100;
+constexpr const auto THREAD_POOL_CONNECTION_TALKERS_AMOUNT = 100;
 constexpr const auto THREAD_POOL_CALCULATORS_AMOUNT = 100;
 
 void Server_instance::Process_Conection_Request_Handler(tcp::socket *session_socket_for_acceptor)
 {
 	string print_data;
-	print_data = boost::lexical_cast<std::string>(boost::this_thread::get_id()) + "=" + thread_id_os + "("
-		+ to_string(thread_id_internal) + ") accepted connection request on port " + to_string(port) + ".\n";
-	print_queue->Push(print_data);
-	static int client_id = -1;
-	boost::mutex::scoped_lock lock(mutex_point_client_list);
-	client_id++;
-	clients_list.emplace_back(&io_service_calculations, print_queue, server_info, session_socket_for_acceptor, client_id);
-	io_service_connection_talk.post(boost::bind(&Client_Instance::Initialization, &clients_list.back()));
+	//print_data = boost::lexical_cast<std::string>(boost::this_thread::get_id()) + "=" + thread_id_os + "("
+		//+ to_string(thread_id_internal) + ") accepted connection request on port " + to_string(port) + ".\n";
+	//print_queue->Push(print_data);
+	static int connection_id = -1;
+	boost::mutex::scoped_lock lock(mutex_point_connections_list);
+	connection_id++;
+	connections_list.emplace_back(&io_service_calculations, print_queue, server_info, session_socket_for_acceptor, connection_id);
+	io_service_connection_talk.post(boost::bind(&Server_Connection_Instance::Initialization, &connections_list.back()));
 	lock.unlock();
 	Connections_Amount_Change(true);
 	server_info->Connections_Total_Amount_Change(true);
@@ -73,34 +74,38 @@ void Server_instance::Process_Conections()
 		sesion_socket_temp = new tcp::socket(io_service_connection_talk);
 		acceptor->async_accept(*sesion_socket_temp, boost::bind(&Server_instance::Process_Conection_Request_Handler, this, sesion_socket_temp));
 	}
-	string temp_string;
+	//string temp_string;
 	while (ENABLE_CONNECTION_RECEIVING)
 	{
 		try {
-			boost::this_thread::sleep_for(boost::chrono::milliseconds(2000));
+			boost::this_thread::sleep_for(boost::chrono::milliseconds(5000));
 		}
 		catch (boost::thread_interrupted&)
 		{
 			break;
 		}
-		boost::mutex::scoped_lock lock(mutex_point_client_list);
-		list <Client_Instance>::iterator i = clients_list.begin();
-		while (i != clients_list.end())
+		//temp_string = "List of clients on port: " + to_string(port) + "\n";
+		
+		boost::mutex::scoped_lock lock(mutex_point_connections_list);
+		list <Server_Connection_Instance>::iterator i = connections_list.begin();
+		while (i != connections_list.end())
 		{
 			if (i->Can_Be_Deleted_Get())
 			{
-				temp_string = "Delete client: " + to_string(i->Id_Get()) + "\n";
+				//temp_string += "Delete client: " + to_string(i->Id_Get()) + "\n";
 				Connections_Amount_Change(false);
 				server_info->Connections_Total_Amount_Change(false);
-				i = clients_list.erase(i);
+				i = connections_list.erase(i);
 			}else
 			{
-				temp_string = "Client: " + to_string(i->Id_Get()) + "\n";
+				//temp_string += "Client: " + to_string(i->Id_Get()) + "\n";
 				i++;
 			}
-			print_queue->Push(temp_string);
 		}
 		lock.unlock();
+		
+		//temp_string += "\n";
+		//print_queue->Push(temp_string);
 	}
 	io_service_connection_accept.stop();
 	io_service_connection_talk.stop();
@@ -111,8 +116,8 @@ void Server_instance::Process_Conections()
 	sesion_socket_temp->close();
 	delete sesion_socket_temp;
 	acceptor->close();
-	temp_string = "Acceptor (thread " + thread_id_os + ") on port " + to_string(port) + " closed\n";
-	print_queue->Push(temp_string);
+	//temp_string = "Acceptor (thread " + thread_id_os + ") on port " + to_string(port) + " closed\n";
+	//print_queue->Push(temp_string);
 	return;
 }
 

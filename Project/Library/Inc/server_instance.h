@@ -6,13 +6,13 @@
 #include <list>
 
 #include "thread_safe_data_structures.h"
-#include "client_instance.h"
+#include "server_connection_instance.h"
 
 class Server_instance
 {
 private:
-	std::list <Client_Instance> clients_list;
-	boost::mutex mutex_point_client_list;
+	std::list <Server_Connection_Instance> connections_list;
+	boost::mutex mutex_point_connections_list;
 
 	Thread_safe_print_queue *print_queue;
 	Thread_safe_server_info *server_info;

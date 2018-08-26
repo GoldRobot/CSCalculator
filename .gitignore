@@ -270,3 +270,7 @@ Client/log\.txt
 Server/build/
 
 Client/build/
+
+Project/Server/build/
+
+Project/Client/build/

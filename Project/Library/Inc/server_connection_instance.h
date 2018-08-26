@@ -5,15 +5,9 @@
 #include <boost/thread/mutex.hpp>
 #include <string>
 
-enum CLIENT_STATES
-{
-	CLIENT_STATE_CONNECTED,
-	CLIENT_STATE_AURIZATION_LOGIN,
-	CLIENT_STATE_AUTORIZED,
-	CLIENT_STATE_DISCONNECTED
-};
+#include "thread_safe_data_structures.h"
 
-class Client_Instance
+class Server_Connection_Instance
 {
 private:
 	boost::asio::io_service *io_service_calculations;
@@ -24,7 +18,7 @@ private:
 	boost::asio::ip::tcp::socket *session_socket;
 
 	int id=-1;
-	int state = CLIENT_STATE_CONNECTED;
+	int state = -1;
 	bool state_work_in_progress = false;
 	bool state_work_ready = false;
 	boost::mutex mutex_point_state_work_ready;
@@ -39,15 +33,15 @@ private:
 	bool State_Work_In_Progress_Get();
 	void State_Work_Ready_Set(bool state_new);
 	bool State_Work_Ready_Get();
-public:
 	int Command_Recognition(std::string message);
+public:
 	void Calculate_Expression();
 	void Initialization();
 	void Received_Message_Handler(const boost::system::error_code & error, size_t byte_received);
 	void Disconnect();
 	bool Can_Be_Deleted_Get();
 	int Id_Get();
-	Client_Instance(boost::asio::io_service *io_service_calculations_new, Thread_safe_print_queue *print_queue_new, Thread_safe_server_info *server_info_new, boost::asio::ip::tcp::socket *sesion_socket_new, int ID_new);
-	Client_Instance(const Client_Instance &obj);
-	~Client_Instance();
+	Server_Connection_Instance(boost::asio::io_service *io_service_calculations_new, Thread_safe_print_queue *print_queue_new, Thread_safe_server_info *server_info_new, boost::asio::ip::tcp::socket *sesion_socket_new, int ID_new);
+	Server_Connection_Instance(const Server_Connection_Instance &obj);
+	~Server_Connection_Instance();
 };

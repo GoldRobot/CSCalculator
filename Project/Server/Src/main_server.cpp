@@ -8,7 +8,7 @@
 #include "server_instance.h"
 #include "thread_safe_data_structures.h"
 
-#define NUMBER_OF_PORT_THREADS 1
+#define NUMBER_OF_PORT_THREADS 5
 #define START_PORT 42042
 #define PRINT_MAIN_SERVICE_INFO true
 #define MAIN_LOOP_ENABLE true
@@ -52,6 +52,7 @@ int main()
 	{
 		if (PRINT_MAIN_SERVICE_INFO)
 		{
+
 			temp_string = "Connections: " + to_string(server_info.Connections_Total_Amount_Get()) + "\n";
 			for (int i = 0; i < NUMBER_OF_PORT_THREADS; i++)
 			{
